@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme",
   "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.8.21",
     "utilitas": "^1989.8.18"
   }
 }
