@@ -1,0 +1,19 @@
+{
+  "name": "slss",
+  "version": "1.0.0",
+  "description": "Starlink Signal Status 🛰️",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leask/Starlink-Signal-Status.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Leask/Starlink-Signal-Status/issues"
+  },
+  "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme"
+}
