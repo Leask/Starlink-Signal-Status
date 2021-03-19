@@ -1,22 +1,20 @@
 'use strict';
 
-const slss = require('./lib/slss');
+const { utilitas } = require('utilitas');
+const starlink = require('starlinkapi');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
-
 const moment = require('moment');
+const slss = require('./lib/slss');
 
-const { utilitas } = require('utilitas');
-
-const starlink = require('starlinkapi');
-
-const pdTime = (time) => { return utilitas.ensureInt(time, { pad: 2 }); };
 const screen = blessed.screen();
 const grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
+const pdTime = (time) => { return utilitas.ensureInt(time, { pad: 2 }); };
+const initData = () => { return { x: [], y: [] }; };
+const fmSpeed = (b) => { return Math.round((b || 0) / 10000) / 100 || '0.00'; };
 const status = [];
 const curStars = [];
 const maxStatus = 100;
-
 
 let satellites = [];
 let idxSatellites = 0;
@@ -26,12 +24,13 @@ const axisTime = (time) => {
     return [t.getHours(), t.getMinutes(), t.getSeconds()].map(pdTime).join(':');
 };
 
-const getMaxMin = (d, fA, fI) => {
-    let [a, i] = [fA ?? Math.max.apply(null, d), fI ?? Math.min.apply(null, d)];
-    const spc = (a - i) / 4;
-    a = Math.round(a + spc);
-    i = Math.round(i - spc);
-    return [a, i > 0 ? i : 0];
+const getMaxMin = (data, percent) => {
+    data = percent ? [100, 0] : data;
+    let [max, min] = [Math.max.apply(null, data), Math.min.apply(null, data)];
+    const spc = (max - min) / 4;
+    max = Math.round(max + spc);
+    min = Math.round(min - spc);
+    return [max, min > 0 ? min : 0];
 };
 
 const infoLog = grid.set(0, 0, 4, 4, contrib.markdown, {
@@ -115,12 +114,12 @@ const renderInfoLog = () => {
 };
 
 const renderObstructedLine = () => {
-    const [data, fixMax, fixMin] = [{ x: [], y: [] }, 100, 0];
+    const data = initData();
     status.map(item => {
         data.x.push(axisTime(item.time));
         data.y.push((item?.obstructionStats?.fractionObstructed || 0) * 100);
     });
-    const [maxY, minY] = getMaxMin(data.y, fixMax, fixMin);
+    const [maxY, minY] = getMaxMin(null, true);
     obstructedLine.options.maxY = maxY;
     obstructedLine.options.minY = minY;
     obstructedLine.setData(data);
@@ -130,7 +129,7 @@ const renderObstructedLine = () => {
 const renderWedgeLine = () => {
     const stat = status[status.length - 1];
     if (!stat) { return; }
-    const [wedge, wedgeAbs, fixMax, fixMin] = [{ label: 'WEDGE', x: [], y: [] }, { label: 'WEDGE ABS', x: [], y: [] }, null, null];
+    const [wedge, wedgeAbs] = [{ label: 'WEDGE', x: [], y: [] }, { label: 'WEDGE ABS', x: [], y: [] }];
     for (let i in stat?.obstructionStats?.wedgeFractionObstructed) {
         wedge.y.push(stat.obstructionStats.wedgeFractionObstructed[i] * 100);
     }
@@ -141,7 +140,7 @@ const renderWedgeLine = () => {
     const [maxY1, minY1] = getMaxMin(wedge.y);
     const [maxY2, minY2] = getMaxMin(wedgeAbs.y);
     const maxY = Math.max(maxY1, maxY2);
-    const minY = Math.max(minY1, minY2);
+    const minY = Math.min(minY1, minY2);
     wedgeLine.options.maxY = maxY;
     wedgeLine.options.minY = minY;
     wedgeLine.setData([wedge, wedgeAbs]);
@@ -149,12 +148,12 @@ const renderWedgeLine = () => {
 };
 
 const renderPingLine = () => {
-    const [data, fixMax, fixMin] = [{ x: [], y: [] }, 100, 0];
+    const data = initData();
     status.map(item => {
         data.x.push(axisTime(item.time));
         data.y.push((1 - Number(item.popPingDropRate || 0)) * 100);
     });
-    const [maxY, minY] = getMaxMin(data.y, fixMax, fixMin);
+    const [maxY, minY] = getMaxMin(null, true);
     pingLine.options.maxY = maxY;
     pingLine.options.minY = minY;
     pingLine.setData(data);
@@ -173,12 +172,12 @@ const renderStarMap = () => {
 };
 
 const renderLatencyLine = () => {
-    let [data, fixMax, fixMin] = [{ x: [], y: [] }, null, null];
+    const data = initData();
     status.map(item => {
         data.x.push(axisTime(item.time));
         data.y.push(Number(item.popPingLatencyMs || 0));
     });
-    const [maxY, minY] = getMaxMin(data.y, fixMax, fixMin);
+    const [maxY, minY] = getMaxMin(data.y);
     latencyLine.options.maxY = maxY;
     latencyLine.options.minY = minY;
     latencyLine.setData(data);
@@ -186,20 +185,16 @@ const renderLatencyLine = () => {
 };
 
 const renderSnrLine = () => {
-    let [data, fixMax, fixMin] = [{ x: [], y: [] }, null, null];
+    const data = initData();
     status.map(item => {
         data.x.push(axisTime(item.time));
         data.y.push(Number(item.snr || 0));
     });
-    const [maxY, minY] = getMaxMin(data.y, fixMax, fixMin);
+    const [maxY, minY] = getMaxMin(data.y);
     snrLine.options.maxY = maxY;
     snrLine.options.minY = minY;
     snrLine.setData(data);
     snrLine.screen.render();
-};
-
-const formatSpeed = (b) => {
-    return Math.round((b || 0) / 1000 / 1000 * 100) / 100 || '0.00';
 };
 
 const renderThroughputSpark = () => {
@@ -208,19 +203,15 @@ const renderThroughputSpark = () => {
         download.push(Number(item.downlinkThroughputBps || 0));
         upload.push(Number(item.uplinkThroughputBps || 0));
     });
-
-    throughputSpark.setData(
-        [
-            `Download Usage ${formatSpeed(download[download.length - 1])} Mbps`,
-            `Upload Usage ${formatSpeed(upload[upload.length - 1])} Mbps `,
-        ],
-        [download, upload]);
+    throughputSpark.setData([
+        `Download Usage ${fmSpeed(download[download.length - 1])} Mbps`,
+        `Upload Usage ${fmSpeed(upload[upload.length - 1])} Mbps `,
+    ], [download, upload]);
 };
 
 const renderLogsLog = () => {
     const stat = status[status.length - 1];
     if (!stat) { return; }
-
     logsLog.log(JSON.stringify(stat));
 };
 
