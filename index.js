@@ -13,6 +13,7 @@ const pdTime = (time) => { return utilitas.ensureInt(time, { pad: 2 }); };
 const initData = () => { return { x: [], y: [] }; };
 const fmSpeed = (b) => { return Math.round((b || 0) / 10000) / 100 || '0.00'; };
 const directions = ['N', 'N', 'E', 'E', 'E', 'S', 'S', 'S', 'W', 'W', 'W', 'N'];
+const widgets = {};
 const status = [];
 const curStars = [];
 const maxStatus = 100;
@@ -34,85 +35,151 @@ const getMaxMin = (data, percent) => {
     return [max, min > 0 ? min : 0];
 };
 
-const infoLog = grid.set(0, 0, 4, 4, contrib.markdown, {
-    fg: 'green', selectedFg: 'green', label: 'Starlink'
-});
+widgets[info] = require('./widgets/info');
+widgets[info].instant = grid.set(widgets[info].layout[0], widgets[info].layout[1], widgets[info].layout[2], widgets[info].layout[3], contrib[widgets[info].type], widgets[info].config);
 
-const obstructedLine = grid.set(0, 4, 4, 2, contrib.line, {
-    label: 'Fraction Obstructed (%)',
-    style: { line: 'yellow', text: 'green', baseline: 'black' },
-    xLabelPadding: 3,
-    wholeNumbersOnly: false,
-    xPadding: 5,
-});
-
-const wedgeLine = grid.set(0, 6, 4, 2, contrib.line, {
-    label: 'Wedge Obstructed',
-    style: { line: 'yellow', text: 'green', baseline: 'black' },
-    xLabelPadding: 3,
-    wholeNumbersOnly: false,
-    xPadding: 5,
-});
-
-const starMap = grid.set(0, 8, 4, 4, contrib.map, { label: 'Satellites' });
-
-const pingLine = grid.set(4, 0, 6, 4, contrib.line, {
-    label: 'Ping Success (%)',
-    style: { line: 'yellow', text: 'green', baseline: 'black' },
-    xLabelPadding: 3,
-    wholeNumbersOnly: false,
-    xPadding: 5,
-});
+// widgets[info] = {
+//     layout: [0, 0, 4, 4],
+//     type: contrib.markdown,
+//     config: {
+//         fg: 'green', selectedFg: 'green', label: 'Starlink'
+//     },
+//     render: () => {
+//         const stat = status[status.length - 1];
+//         if (!stat) { return; }
+//         const [log, arrLog] = [{
+//             'Device ID': stat.deviceInfo.id,
+//             'Hardware Version': stat.deviceInfo.hardwareVersion,
+//             'Software Version': stat.deviceInfo.softwareVersion,
+//             'Country Code': stat.deviceInfo.countryCode,
+//             'Uptime': moment(Date.now() - stat.deviceState.uptimeS * 1000).fromNow().replace(/ago$/i, ''),
+//             'State': stat.state,
+//             'Currently Obstructed': !!stat.obstructionStats?.currentlyObstructed,
+//             'Obstructed Time': Math.round((stat.deviceState.uptimeS - (stat?.obstructionStats?.validS || 0)) / stat.deviceState.uptimeS * 100 * 100) / 100 + ' %',
+//             'Last 24 Hour Obstructed': moment(Date.now() - (stat?.obstructionStats?.last24hObstructedS || 0) * 1000).fromNow().replace(/ago$/i, ''),
 
 
-const latencyLine = grid.set(4, 4, 6, 4, contrib.line, {
-    label: 'Latency (ms)',
-    style: { line: 'yellow', text: 'green', baseline: 'black' },
-    xLabelPadding: 3,
-    wholeNumbersOnly: false,
-    xPadding: 5,
-});
-
-const snrLine = grid.set(4, 8, 4, 4, contrib.line, {
-    label: 'SNR',
-    style: { line: 'yellow', text: 'green', baseline: 'black' },
-    xLabelPadding: 3,
-    wholeNumbersOnly: false,
-    xPadding: 5,
-});
-
-const throughputSpark = grid.set(8, 8, 2, 4, contrib.sparkline, {
-    label: 'Throughput (bits/sec)'
-    , tags: true
-    , style: { fg: 'blue' }
-});
-
-const logsLog = grid.set(10, 0, 2, 12, contrib.log, {
-    fg: "green"
-    , selectedFg: "green"
-    , label: 'Logs'
-    ,
-});
-
-const renderInfoLog = () => {
-    const stat = status[status.length - 1];
-    if (!stat) { return; }
-    const [log, arrLog] = [{
-        'Device ID': stat.deviceInfo.id,
-        'Hardware Version': stat.deviceInfo.hardwareVersion,
-        'Software Version': stat.deviceInfo.softwareVersion,
-        'Country Code': stat.deviceInfo.countryCode,
-        'Uptime': moment(Date.now() - stat.deviceState.uptimeS * 1000).fromNow().replace(/ago$/i, ''),
-        'State': stat.state,
-        'Currently Obstructed': !!stat.obstructionStats?.currentlyObstructed,
-        'Obstructed Time': Math.round((stat.deviceState.uptimeS - (stat?.obstructionStats?.validS || 0)) / stat.deviceState.uptimeS * 100 * 100) / 100 + ' %',
-        'Last 24 Hour Obstructed': moment(Date.now() - (stat?.obstructionStats?.last24hObstructedS || 0) * 1000).fromNow().replace(/ago$/i, ''),
+//         }, []];
+//         for (let i in log) { arrLog.push(`${i}: ${log[i]}`); }
+//         infoLog.setMarkdown(arrLog.join('\n'));
+//     },
+// };
 
 
-    }, []];
-    for (let i in log) { arrLog.push(`${i}: ${log[i]}`); }
-    infoLog.setMarkdown(arrLog.join('\n'));
-};
+
+// const widgets = {
+//     info: {
+//         layout: [0, 0, 4, 4],
+//         type: contrib.markdown,
+//         config: {
+//             fg: 'green', selectedFg: 'green', label: 'Starlink'
+//         },
+//         render: () => {
+//             const stat = status[status.length - 1];
+//             if (!stat) { return; }
+//             const [log, arrLog] = [{
+//                 'Device ID': stat.deviceInfo.id,
+//                 'Hardware Version': stat.deviceInfo.hardwareVersion,
+//                 'Software Version': stat.deviceInfo.softwareVersion,
+//                 'Country Code': stat.deviceInfo.countryCode,
+//                 'Uptime': moment(Date.now() - stat.deviceState.uptimeS * 1000).fromNow().replace(/ago$/i, ''),
+//                 'State': stat.state,
+//                 'Currently Obstructed': !!stat.obstructionStats?.currentlyObstructed,
+//                 'Obstructed Time': Math.round((stat.deviceState.uptimeS - (stat?.obstructionStats?.validS || 0)) / stat.deviceState.uptimeS * 100 * 100) / 100 + ' %',
+//                 'Last 24 Hour Obstructed': moment(Date.now() - (stat?.obstructionStats?.last24hObstructedS || 0) * 1000).fromNow().replace(/ago$/i, ''),
+
+
+//             }, []];
+//             for (let i in log) { arrLog.push(`${i}: ${log[i]}`); }
+//             infoLog.setMarkdown(arrLog.join('\n'));
+//         },
+//     },
+//     obstructed: {
+//         layout: [0, 4, 4, 2],
+//         type: contrib.line,
+//         config: {
+//             label: 'Fraction Obstructed (%)',
+//             style: { line: 'yellow', text: 'green', baseline: 'black' },
+//             xLabelPadding: 3,
+//             wholeNumbersOnly: false,
+//             xPadding: 5,
+//         },
+//     },
+//     wedge: {
+//         layout: [0, 6, 4, 2],
+//         type: contrib.line,
+//         config: {
+//             label: 'Wedge Obstructed',
+//             style: { line: 'yellow', text: 'green', baseline: 'black' },
+//             xLabelPadding: 3,
+//             wholeNumbersOnly: false,
+//             xPadding: 5,
+//         },
+//     },
+//     stars: {
+//         layout: [0, 8, 4, 4],
+//         type: contrib.map,
+//         config: { label: 'Satellites' },
+//     },
+//     ping: {
+//         layout: [4, 0, 6, 4],
+//         type: contrib.line,
+//         config: {
+//             label: 'Ping Success (%)',
+//             style: { line: 'yellow', text: 'green', baseline: 'black' },
+//             xLabelPadding: 3,
+//             wholeNumbersOnly: false,
+//             xPadding: 5,
+//         },
+//     },
+//     latency: {
+//         layout: [4, 4, 6, 4],
+//         type: contrib.line,
+//         config: {
+//             label: 'Latency (ms)',
+//             style: { line: 'yellow', text: 'green', baseline: 'black' },
+//             xLabelPadding: 3,
+//             wholeNumbersOnly: false,
+//             xPadding: 5,
+//         }
+//     },
+//     snr: {
+//         layout: [4, 8, 4, 4],
+//         type: contrib.line,
+//         config: {
+//             label: 'SNR',
+//             style: { line: 'yellow', text: 'green', baseline: 'black' },
+//             xLabelPadding: 3,
+//             wholeNumbersOnly: false,
+//             xPadding: 5,
+//         },
+//     },
+//     throughput: {
+//         layout: [8, 8, 2, 4],
+//         type: contrib.sparkline,
+//         config: {
+//             label: 'Throughput (bits/sec)'
+//             , tags: true
+//             , style: { fg: 'blue' }
+//         }
+//     },
+//     logs: {
+//         layout: [10, 0, 2, 12],
+//         type: contrib.log,
+//         config: {
+//             fg: "green"
+//             , selectedFg: "green"
+//             , label: 'Logs'
+//         }
+//     },
+// };
+
+
+
+
+
+
+
 
 const renderObstructedLine = () => {
     const data = initData();
@@ -216,15 +283,18 @@ const renderLogsLog = () => {
 const renderAll = (resp) => {
     if (resp) { status.push(resp); }
     while (status.length > maxStatus) { status.shift(); }
-    renderInfoLog();
-    renderObstructedLine();
-    renderWedgeLine();
-    renderStarMap();
-    renderPingLine();
-    renderLatencyLine();
-    renderSnrLine();
-    renderThroughputSpark();
-    renderLogsLog();
+    for (let i in widgets) {
+        widgets[i].render(status, null, widgets[i].instant);
+    };
+    // renderInfoLog();
+    // renderObstructedLine();
+    // renderWedgeLine();
+    // renderStarMap();
+    // renderPingLine();
+    // renderLatencyLine();
+    // renderSnrLine();
+    // renderThroughputSpark();
+    // renderLogsLog();
 };
 
 (async () => {
