@@ -12,6 +12,7 @@ const grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
 const pdTime = (time) => { return utilitas.ensureInt(time, { pad: 2 }); };
 const initData = () => { return { x: [], y: [] }; };
 const fmSpeed = (b) => { return Math.round((b || 0) / 10000) / 100 || '0.00'; };
+const directions = ['N', 'N', 'E', 'E', 'E', 'S', 'S', 'S', 'W', 'W', 'W', 'N'];
 const status = [];
 const curStars = [];
 const maxStatus = 100;
@@ -129,20 +130,17 @@ const renderObstructedLine = () => {
 const renderWedgeLine = () => {
     const stat = status[status.length - 1];
     if (!stat) { return; }
-    const [wedge, wedgeAbs] = [{ label: 'WEDGE', x: [], y: [] }, { label: 'WEDGE ABS', x: [], y: [] }];
+    const [wedge, wedgeAbs] = [{ label: 'WEDGE', x: directions, y: [] }, { label: 'WEDGE ABS', x: directions, y: [] }];
     for (let i in stat?.obstructionStats?.wedgeFractionObstructed) {
         wedge.y.push(stat.obstructionStats.wedgeFractionObstructed[i] * 100);
     }
     for (let i in stat?.obstructionStats?.wedgeAbsFractionObstructed) {
         wedgeAbs.y.push(stat.obstructionStats.wedgeAbsFractionObstructed[i] * 100);
     }
-    wedge.x = wedgeAbs.x = ['N', 'N', 'E', 'E', 'E', 'S', 'S', 'S', 'W', 'W', 'W', 'N'];
     const [maxY1, minY1] = getMaxMin(wedge.y);
     const [maxY2, minY2] = getMaxMin(wedgeAbs.y);
-    const maxY = Math.max(maxY1, maxY2);
-    const minY = Math.min(minY1, minY2);
-    wedgeLine.options.maxY = maxY;
-    wedgeLine.options.minY = minY;
+    wedgeLine.options.maxY = Math.max(maxY1, maxY2);
+    wedgeLine.options.minY = Math.min(minY1, minY2);
     wedgeLine.setData([wedge, wedgeAbs]);
     wedgeLine.screen.render();
 };
