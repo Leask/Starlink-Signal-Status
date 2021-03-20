@@ -1,26 +1,37 @@
 'use strict';
 
+const moment = require('moment');
+const func = require('../lib/func');
+
+const formatPercent = (num) => { return Math.round(num * 100) / 100 + ' %'; };
+
+const formatTime = (t) => {
+    return moment(Date.now() - (t || 0) * 1000).fromNow().replace(/ ago$/i, '');
+};
+
 module.exports = {
     layout: [0, 0, 4, 4],
     type: 'markdown',
     config: {
         fg: 'green', selectedFg: 'green', label: 'Starlink'
     },
-    render: (status, _, widget) => {
-        const stat = status[status.length - 1];
+    render: (status, instant) => {
+        const stat = func.getLastAntenna(status);
         if (!stat) { return; }
+        const u = stat.deviceState.uptimeS;
+        const o = stat?.obstructionStats;
         const [log, arrLog] = [{
             'Device ID': stat.deviceInfo.id,
             'Hardware Version': stat.deviceInfo.hardwareVersion,
             'Software Version': stat.deviceInfo.softwareVersion,
             'Country Code': stat.deviceInfo.countryCode,
-            'Uptime': moment(Date.now() - stat.deviceState.uptimeS * 1000).fromNow().replace(/ago$/i, ''),
+            'Uptime': formatTime(u),
             'State': stat.state,
-            'Currently Obstructed': !!stat.obstructionStats?.currentlyObstructed,
-            'Obstructed Time': Math.round((stat.deviceState.uptimeS - (stat?.obstructionStats?.validS || 0)) / stat.deviceState.uptimeS * 100 * 100) / 100 + ' %',
-            'Last 24 Hour Obstructed': moment(Date.now() - (stat?.obstructionStats?.last24hObstructedS || 0) * 1000).fromNow().replace(/ago$/i, ''),
+            'Currently Obstructed': !!o?.currentlyObstructed,
+            'Obstructed Time': formatPercent((u - (o?.validS || 0)) / u * 100),
+            'Last 24 Hour Obstructed': formatTime(o?.last24hObstructedS),
         }, []];
         for (let i in log) { arrLog.push(`${i}: ${log[i]}`); }
-        widget.setMarkdown(arrLog.join('\n'));
+        instant.setMarkdown(arrLog.join('\n'));
     },
 };
