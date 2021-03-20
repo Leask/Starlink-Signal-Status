@@ -5,6 +5,12 @@
   "private": false,
   "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme",
   "main": "index.js",
+  "bin": {
+    "slss": "index.js"
+  },
+  "engines": {
+    "node": ">=14.x"
+  },
   "scripts": {
     "start": "node index.js",
     "debug": "node --inspect --trace-warnings debug.js",
