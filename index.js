@@ -14,7 +14,7 @@ const screen = blessed.screen();
 const grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
 const widgetsPath = path.join(__dirname, 'widgets');
 const widgets = {};
-const status = { antenna: [], satellites: [], iS: 0, cS: [] };
+const status = { antenna: [], satellites: [], logs: [], iS: 0, cS: [] };
 
 (fs.readdirSync(widgetsPath) || []).filter((file) => {
     return /\.js$/i.test(file) && file.indexOf('.') !== 0;
@@ -28,12 +28,20 @@ const status = { antenna: [], satellites: [], iS: 0, cS: [] };
     );
 });
 
-const renderAll = (resp) => {
-    if (resp) { status.antenna.push(resp); }
+const renderAll = (resp, err) => {
+    resp && status.antenna.push(resp);
+    (resp || err) && status.logs.push(resp || err);
     while (status.antenna.length > func.maxStatus) { status.antenna.shift(); }
     for (let i in widgets) { widgets[i].render(status, widgets[i].instant); };
     screen.render();
 };
+
+screen.key(['escape', 'q', 'C-c'], function(c, k) { return process.exit(0); });
+
+screen.on('resize', function(e) {
+    for (let i in widgets) { widgets[i].instant.emit('attach'); };
+    renderAll();
+});
 
 (async () => {
     await slss.watchStatus(renderAll);

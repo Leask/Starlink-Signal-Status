@@ -11,15 +11,16 @@ module.exports = {
         label: 'Wedge Obstructed',
         style: { line: 'yellow', text: 'green', baseline: 'black' },
         xLabelPadding: 3,
-        wholeNumbersOnly: false,
         xPadding: 5,
+        showLegend: true,
+        wholeNumbersOnly: false,
     },
     render: (status, instant) => {
         const stat = func.getLastAntenna(status);
         if (!stat) { return; }
         const [o, data] = [stat?.obstructionStats, [
-            { label: 'WEDGE', x: directions, y: [] },
-            { label: 'WEDGE ABS', x: directions, y: [] },
+            { title: 'Wedge', x: directions, y: [] },
+            { title: 'Wedge ABS', x: directions, y: [] },
         ]];
         for (let i in o?.wedgeFractionObstructed) {
             data[0].y.push(Number(o.wedgeFractionObstructed[i] || 0) * 100);
