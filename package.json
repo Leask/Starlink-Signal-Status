@@ -1,21 +1,28 @@
 {
   "name": "slss",
-  "version": "1.0.0",
-  "description": "Starlink Signal Status 🛰️",
+  "description": "Starlink Signal Status",
+  "version": "1989.6.4",
+  "private": false,
+  "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "debug": "node --inspect --trace-warnings debug.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ncuinit": "npm install -g npm-check-updates",
+    "updep": "npx ncu -u && npm install && ( git commit -am 'update dependencies' || true )",
+    "gitsync": "git pull && git push",
+    "prepublishOnly": "npm version patch && npm run updep && npm run gitsync"
   },
+  "author": "Leask Wong <i@leaskh.com>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Leask/Starlink-Signal-Status.git"
   },
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/Leask/Starlink-Signal-Status/issues"
   },
-  "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme",
   "dependencies": {
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.8.21",
