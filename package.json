@@ -31,9 +31,9 @@
   },
   "dependencies": {
     "blessed": "^0.1.81",
-    "blessed-contrib": "^4.8.21",
+    "blessed-contrib": "^4.10.1",
     "moment": "^2.29.1",
     "starlinkapi": "^1.0.0",
-    "utilitas": "^1989.8.34"
+    "utilitas": "^1989.8.71"
   }
 }
