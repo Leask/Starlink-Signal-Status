@@ -5,6 +5,7 @@
   "private": false,
   "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme",
   "main": "index.js",
+  "type": "module",
   "bin": {
     "slss": "index.js"
   },
