@@ -14,9 +14,9 @@ export const { layout, type, config, render } = {
         const data = initData();
         status.antenna.map(item => {
             data.x.push(axisTime(item.time));
-            data.y.push(Number(item.snr || 0));
+            data.y.push(Number(item.snr || ~~item.isSnrAboveNoiseFloor * 100));
         });
-        [instant.options.maxY, instant.options.minY] = getMaxMin(data.y);
+        [instant.options.maxY, instant.options.minY] = getMaxMin(data.y, 1);
         instant.setData(data);
     },
 };
