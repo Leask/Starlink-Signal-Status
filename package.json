@@ -1,7 +1,7 @@
 {
   "name": "slss",
   "description": "Starlink Signal Status",
-  "version": "1990.1.1",
+  "version": "1990.1.2",
   "private": false,
   "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme",
   "main": "index.mjs",
