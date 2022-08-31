@@ -1,8 +1,6 @@
-'use strict';
+const fmSpeed = b => Math.round((b || 0) / 10000) / 100 || '0.00';
 
-const fmSpeed = (b) => { return Math.round((b || 0) / 10000) / 100 || '0.00'; };
-
-module.exports = {
+export const { layout, type, config, render } = {
     layout: [8, 8, 2, 4],
     type: 'sparkline',
     config: {

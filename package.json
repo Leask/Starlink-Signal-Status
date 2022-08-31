@@ -1,19 +1,19 @@
 {
   "name": "slss",
   "description": "Starlink Signal Status",
-  "version": "1989.6.16",
+  "version": "1990.1.1",
   "private": false,
   "homepage": "https://github.com/Leask/Starlink-Signal-Status#readme",
-  "main": "index.js",
+  "main": "index.mjs",
   "bin": {
-    "slss": "index.js"
+    "slss": "index.mjs"
   },
   "engines": {
-    "node": ">=14.x"
+    "node": ">=18.x"
   },
   "scripts": {
-    "start": "node --no-deprecation index.js",
-    "debug": "node --inspect --trace-warnings debug.js",
+    "start": "node --no-deprecation index.mjs",
+    "debug": "node --inspect --trace-warnings index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "ncuinit": "npm install -g npm-check-updates",
     "updep": "npx ncu -u && npm install && ( git commit -am 'update dependencies' || true )",

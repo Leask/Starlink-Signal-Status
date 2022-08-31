@@ -1,10 +1,8 @@
-'use strict';
-
-const func = require('../lib/func');
+import { getLastAntenna, getMaxMin } from '../lib/func.mjs';
 
 const directions = ['N', 'N', 'E', 'E', 'E', 'S', 'S', 'S', 'W', 'W', 'W', 'N'];
 
-module.exports = {
+export const { layout, type, config, render } = {
     layout: [0, 6, 4, 2],
     type: 'line',
     config: {
@@ -16,7 +14,7 @@ module.exports = {
         wholeNumbersOnly: false,
     },
     render: (status, instant) => {
-        const stat = func.getLastAntenna(status);
+        const stat = getLastAntenna(status);
         if (!stat) { return; }
         const [o, data] = [stat?.obstructionStats, [
             { title: 'Wedge', x: directions, y: [] },
@@ -28,8 +26,8 @@ module.exports = {
         for (let i in o?.wedgeAbsFractionObstructed) {
             data[1].y.push(Number(o.wedgeAbsFractionObstructed[i] || 0) * 100);
         }
-        const [maxY1, minY1] = func.getMaxMin(data[0].y);
-        const [maxY2, minY2] = func.getMaxMin(data[1].y);
+        const [maxY1, minY1] = getMaxMin(data[0].y);
+        const [maxY2, minY2] = getMaxMin(data[1].y);
         instant.options.maxY = Math.max(maxY1, maxY2);
         instant.options.minY = Math.min(minY1, minY2);
         instant.setData(data);

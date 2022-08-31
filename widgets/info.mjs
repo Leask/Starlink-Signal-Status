@@ -1,22 +1,15 @@
-'use strict';
+import { getLastAntenna } from '../lib/func.mjs';
+import moment from 'moment';
 
-const moment = require('moment');
-const func = require('../lib/func');
+const formatPercent = num => Math.round(num * 100) / 100 + ' %';
+const formatTime = t => moment(Date.now() - (t || 0) * 1000).fromNow().replace(/ ago$/i, '');
 
-const formatPercent = (num) => { return Math.round(num * 100) / 100 + ' %'; };
-
-const formatTime = (t) => {
-    return moment(Date.now() - (t || 0) * 1000).fromNow().replace(/ ago$/i, '');
-};
-
-module.exports = {
+export const { layout, type, config, render } = {
     layout: [0, 0, 4, 4],
     type: 'markdown',
-    config: {
-        fg: 'green', selectedFg: 'green', label: 'Starlink'
-    },
+    config: { fg: 'green', selectedFg: 'green', label: 'Starlink' },
     render: (status, instant) => {
-        const stat = func.getLastAntenna(status);
+        const stat = getLastAntenna(status);
         if (!stat) { return; }
         const u = stat.deviceState.uptimeS;
         const o = stat?.obstructionStats;

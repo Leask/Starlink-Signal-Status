@@ -1,8 +1,6 @@
-'use strict';
+import { axisTime, getMaxMin, initData } from '../lib/func.mjs';
 
-const func = require('../lib/func');
-
-module.exports = {
+export const { layout, type, config, render } = {
     layout: [4, 4, 6, 4],
     type: 'line',
     config: {
@@ -13,12 +11,12 @@ module.exports = {
         xPadding: 5,
     },
     render: (status, instant) => {
-        const data = func.initData();
+        const data = initData();
         status.antenna.map(item => {
-            data.x.push(func.axisTime(item.time));
+            data.x.push(axisTime(item.time));
             data.y.push(Number(item.popPingLatencyMs || 0));
         });
-        [instant.options.maxY, instant.options.minY] = func.getMaxMin(data.y);
+        [instant.options.maxY, instant.options.minY] = getMaxMin(data.y);
         instant.setData(data);
     },
 };

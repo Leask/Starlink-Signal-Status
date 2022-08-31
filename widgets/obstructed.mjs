@@ -1,8 +1,6 @@
-'use strict';
+import { axisTime, getMaxMin, initData } from '../lib/func.mjs';
 
-const func = require('../lib/func');
-
-module.exports = {
+export const { layout, type, config, render } = {
     layout: [0, 4, 4, 2],
     type: 'line',
     config: {
@@ -13,12 +11,12 @@ module.exports = {
         xPadding: 5,
     },
     render: (status, instant) => {
-        const data = func.initData();
+        const data = initData();
         status.antenna.map(x => {
-            data.x.push(func.axisTime(x.time));
+            data.x.push(axisTime(x.time));
             data.y.push((x?.obstructionStats?.fractionObstructed || 0) * 100);
         });
-        [instant.options.maxY, instant.options.minY] = func.getMaxMin(null, 1);
+        [instant.options.maxY, instant.options.minY] = getMaxMin(null, 1);
         instant.setData(data);
     },
 };

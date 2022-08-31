@@ -1,21 +1,18 @@
-'use strict';
-
-const { utilitas } = require('utilitas');
-const func = require('../lib/func');
+import { getLastAntenna } from '../lib/func.mjs';
 
 const ignore = [
     'killed', 'code', 'signal', 'cmd', 'stdout',
     'stderr', 'deviceInfo', 'obstructionStats'
 ];
 
-module.exports = {
+export const { layout, type, config, render } = {
     layout: [10, 0, 2, 12],
     type: 'log',
     config: { fg: 'green', selectedFg: 'green', label: 'Logs' },
     render: (sus, instant) => {
-        let s = func.getLastAntenna(sus, 'logs');
+        let s = getLastAntenna(sus, 'logs');
         if (!s) { return; }
-        if (utilitas.isError(s)) {
+        if (Error.isError(s)) {
             s = { time: new Date(), ...s, message: s.stderr || s.message };
         }
         const l = JSON.parse(JSON.stringify(s));

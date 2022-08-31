@@ -1,37 +1,39 @@
 #!/usr/bin/env node
 
-'use strict';
+import { join } from 'path';
+import { maxStatus } from './lib/func.mjs';
+import { readdirSync } from 'fs';
+import { satellites } from 'starlinkapi';
+import { utilitas } from 'utilitas';
+import { watchStatus } from './lib/slss.mjs';
+import blessed from 'blessed';
+import contrib from 'blessed-contrib';
 
-const starlink = require('starlinkapi');
-const blessed = require('blessed');
-const contrib = require('blessed-contrib');
-const slss = require('./lib/slss');
-const func = require('./lib/func');
-const path = require('path');
-const fs = require('fs');
-
+const { __dirname } = utilitas.__(import.meta.url);
 const screen = blessed.screen();
 const grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
-const widgetsPath = path.join(__dirname, 'widgets');
+const widgetsPath = join(__dirname, 'widgets');
 const widgets = {};
 const status = { antenna: [], satellites: [], logs: [], iS: 0, cS: [] };
 
-(fs.readdirSync(widgetsPath) || []).filter((file) => {
-    return /\.js$/i.test(file) && file.indexOf('.') !== 0;
-}).forEach((file) => {
-    const name = file.replace(/^(.*)\.js$/i, '$1');
-    widgets[name] = require(path.join(widgetsPath, file));
+const widgetFiles = (readdirSync(widgetsPath) || []).filter(
+    file => /\.mjs$/i.test(file) && file.indexOf('.') !== 0
+);
+
+for (let file of widgetFiles) {
+    const name = file.replace(/^(.*)\.mjs$/i, '$1');
+    widgets[name] = { ...await import(join(widgetsPath, file)) };
     widgets[name].instant = grid.set(
         widgets[name].layout[0], widgets[name].layout[1],
         widgets[name].layout[2], widgets[name].layout[3],
         contrib[widgets[name].type], widgets[name].config
     );
-});
+}
 
 const renderAll = (resp, err) => {
     resp && status.antenna.push(resp);
     (resp || err) && status.logs.push(resp || err);
-    while (status.antenna.length > func.maxStatus) { status.antenna.shift(); }
+    while (status.antenna.length > maxStatus) { status.antenna.shift(); }
     for (let i in widgets) { widgets[i].render(status, widgets[i].instant); };
     screen.render();
 };
@@ -43,7 +45,5 @@ screen.on('resize', function(e) {
     renderAll();
 });
 
-(async () => {
-    await slss.watchStatus(renderAll);
-    status.satellites = await starlink.satellites();
-})();
+await watchStatus(renderAll);
+status.satellites = await satellites();
