@@ -1,4 +1,4 @@
-# `S`tar`L`ink `S`ignal `S`tatus 🛰️
+# 🛰️ `S`tar`L`ink `S`ignal `S`tatus
 
 [Starlink](https://starlink.com/) Signal Status Dashboard in your terminal.
 
