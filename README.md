@@ -6,6 +6,8 @@
 
 ## Requirement
 
+1. Use Node.js 26.12.1 or newer (`.nvmrc` selects the CI version) and npm.
+
 1. You can use `slss` dashboard only in the Starlink network.
 
 1. This project depends on [grpcurl](https://github.com/fullstorydev/grpcurl). Please follow the link and install `grpcurl` first.
@@ -21,3 +23,8 @@ npm install -g slss
 ```console
 slss
 ```
+
+## Check
+
+Run `npm ci --ignore-scripts` and `npm test`. The tests load the dashboard
+dependencies and widgets without contacting a Starlink device or service.

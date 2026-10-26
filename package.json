@@ -9,12 +9,12 @@
     "slss": "index.mjs"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": ">=26.12.1"
   },
   "scripts": {
     "start": "node --no-deprecation index.mjs",
     "debug": "node --inspect --trace-warnings index.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "ncuinit": "npm install -g npm-check-updates",
     "updep": "npx ncu -u && npm install && ( git commit -am 'update dependencies' || true )",
     "gitsync": "git pull && git push",
@@ -34,6 +34,6 @@
     "blessed-contrib": "^4.11.0",
     "moment": "^2.29.4",
     "starlinkapi": "^1.0.0",
-    "utilitas": "^1991.1.3"
+    "utilitas": "^2001.1.158"
   }
 }
