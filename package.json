@@ -35,5 +35,13 @@
     "moment": "^2.29.4",
     "starlinkapi": "^1.0.0",
     "utilitas": "^2001.1.158"
+  },
+  "overrides": {
+    "strip-ansi": {
+      "ansi-regex": "6.0.1"
+    },
+    "has-ansi": {
+      "ansi-regex": "6.0.1"
+    }
   }
 }
