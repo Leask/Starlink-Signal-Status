@@ -38,7 +38,7 @@
   },
   "overrides": {
     "starlinkapi": {
-      "axios": "^0.33.0"
+      "axios": "^0.34.0"
     },
     "map-canvas": {
       "xml2js": "^0.6.2"
