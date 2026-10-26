@@ -35,5 +35,17 @@
     "moment": "^2.29.4",
     "starlinkapi": "^1.0.0",
     "utilitas": "^2001.1.158"
+  },
+  "overrides": {
+    "starlinkapi": {
+      "axios": "^0.34.0"
+    },
+    "map-canvas": {
+      "xml2js": "^0.6.2"
+    },
+    "lodash": "^4.18.1",
+    "simple-update-notifier": {
+      "semver": "^7.7.0"
+    }
   }
 }
